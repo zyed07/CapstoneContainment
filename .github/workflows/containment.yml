@@ -6,15 +6,23 @@ on:
       - main
 
 jobs:
-  build:
+  containment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run security scan
-        run: echo "🔒 Scanning code for malicious patterns..."
+      - name: Scan for malicious code
+        run: |
+          echo "🔍 Scanning code..."
+          if grep -R "MALICIOUS_CODE" .; then
+            echo "🚨 Malicious code detected!"
+            exit 1
+          else
+            echo "✅ No malicious code found."
+          fi
 
-      - name: Containment action
-        if: always()
-        run: echo "🚨 Malicious code detected → Disabling pipeline & notifying owners"
+      - name: Disable pipeline (simulate)
+        if: failure()
+        run: echo "⛔ Disabling pipeline triggers + notifying repo owners..."
+
